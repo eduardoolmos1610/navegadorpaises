@@ -38,13 +38,49 @@
 }
 
 .card {
-  background: #f8f9fa;
-  border: 2px solid #007bff;
+/* Contenedor principal de la tarjeta */
+.card {
+  background: white;
   border-radius: 12px;
-  padding: 20px;
-  position: relative;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  margin: 1rem auto;
+  max-width: 900px; /* Límite de ancho para pantallas grandes */
+  width: 95%;      /* Margen de seguridad en móviles */
+  
+  /* Layout flexible */
   display: flex;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  flex-direction: column; 
+  gap: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+/* Diseño para Pantallas Grandes (Tablets en horizontal y Laptops) */
+@media (min-width: 768px) {
+  .card {
+    flex-direction: row; /* Cambia a horizontal */
+    align-items: flex-start;
+    padding: 2rem;
+  }
+
+  .card-header {
+    flex: 1; /* La bandera ocupa una parte */
+    max-width: 300px;
+  }
+
+  .card-body {
+    flex: 2; /* El contenido ocupa el resto */
+  }
+}
+
+/* Ajustes para la imagen de la bandera */
+.card-flag {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  object-fit: cover;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
 }
 
 .main-flag {
