@@ -1,0 +1,117 @@
+<div class="container">
+  <h1>🌍 Explorador de Países</h1>
+
+  <div class="search-box">
+    <input 
+      type="text" 
+      placeholder="Buscar por nombre o código (ej: MEX)..." 
+      (input)="onSearch($event)"
+      class="search-input"
+    >
+    <p class="results-count">Resultados: {{ filteredCountries.length }}</p>
+  </div>
+
+  <div class="detail-panel" *ngIf="selectedCountry">
+    <div class="card">
+
+      <button class="close-btn" (click)="selectedCountry = null">×</button>
+      
+      <div class="card-content">
+        <img [src]="selectedCountry.flags.svg" class="main-flag">
+        <div class="info">
+          <h2>{{ selectedCountry.name?.common }}</h2>
+          <p><strong>Capital:</strong> {{ selectedCountry.capital?.[0] || 'N/A' }}</p>
+          <p><strong>Región:</strong> {{ selectedCountry.region }}</p>
+          <p><strong>Población:</strong> {{ selectedCountry.population | number }} hab.</p>
+          <p><strong>Código ISO:</strong> {{ selectedCountry.cca3 }}</p>
+          
+          <p><strong>Idiomas:</strong> 
+            <span *ngFor="let lang of selectedCountry.languages | keyvalue; let isLast = last">
+              {{ lang.value }}{{ isLast ? '' : ', ' }}
+            </span>
+          </p>
+
+          <p><strong>Sentido de conducción:</strong> 
+            {{ selectedCountry.car?.side === 'right' ? 'Derecha ➡️' : 'Izquierda ⬅️' }}
+          </p>
+        </div>
+      </div>
+
+      <div class="similar-section" *ngIf="similarCountries.length > 0">
+        <h3>Países con población similar en base a idioa, poblacion y lado por el que se conduce:</h3>
+        <div class="similar-grid">
+          <div 
+            class="similar-item" 
+            *ngFor="let s of similarCountries" 
+            (click)="showDetails(s)"
+          >
+            <img [src]="s.flags.png" [alt]="s.name.common" class="recomended-flag">
+ <div class="similar-info">
+          <h2>{{ s.name?.common }}</h2>
+          <p><strong>Capital:</strong> {{ s.capital?.[0] || 'N/A' }}</p>
+          <p><strong>Región:</strong> {{ s.region }}</p>
+          <p><strong>Población:</strong> {{ s.population | number }} hab.</p>
+          <p><strong>Código ISO:</strong> {{ s.cca3 }}</p>
+          
+          <p><strong>Idiomas:</strong> 
+            <span *ngFor="let lang of s.languages | keyvalue; let isLast = last">
+              {{ lang.value }}{{ isLast ? '' : ', ' }}
+            </span>
+          </p>
+
+          <p><strong>Sentido de conducción:</strong> 
+            {{ s.car?.side === 'right' ? 'Derecha ➡️' : 'Izquierda ⬅️' }}
+          </p>
+        </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="similarCountries.length === 0" class="no-similar">
+        No hay otros países similares con respecto a poblacion, idioma y lado por el que se conduce
+      </div>
+      <div class="similar-section" *ngIf="similarCountries.length > 0">
+  <h3>Comparativa de Riqueza (PIB USD) y porcentaje respecto al pais seleccionado:</h3>
+  <div class="similar-grid">
+    <div class="similar-item" *ngFor="let s of similarCountries" (click)="showDetails(s)">
+      <div class="similar-header">
+        <img [src]="s.flags.png" class="recomended-flag">
+        <strong>{{ s.name.common }}</strong>
+      </div>
+
+      <div class="chart-container">
+        <div class="chart-label">
+          <span>{{ s.gdp ? '$' + (s.gdp | number:'1.0-0') : 'Dato no disp.' }}</span>
+          <span *ngIf="s.gdp && selectedCountry.gdp">
+            {{ (s.gdp / selectedCountry.gdp) | percent }}
+          </span>
+        </div>
+        <div class="bar-background">
+          <div class="bar-fill" 
+               [style.width.%]="getPercentage(s.gdp, selectedCountry.gdp)"
+               [style.background-color]="s.gdp > selectedCountry.gdp ? '#ffd700' : '#c0c0c0'">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    </div>
+  </div>
+
+  <div *ngIf="loading">Cargando...</div>
+
+  <div class="grid-countries" *ngIf="!loading">
+    <div 
+      class="country-item" 
+      *ngFor="let c of filteredCountries" 
+      (click)="showDetails(c)">
+      <img [src]="c.flags.png" [alt]="c.name.common">
+      <span>{{ c.name.common }}</span>
+    </div>
+  </div>
+
+  <div *ngIf="filteredCountries.length === 0 && !loading" class="no-results">
+    No se encontraron países que coincidan con tu búsqueda.
+  </div>
+</div>
