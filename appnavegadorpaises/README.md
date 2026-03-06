@@ -1,59 +1,78 @@
-# Appnavegadorpaises
+Reto: Navegador de países (REST Countries) + similares
+Alcance:
+Lista
+Tabla de busqueda
+3 paises recomendados por similitud
+Storage: github pages
+IA: gemini
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.1.
+. Arquitectura y Dependencias
+La aplicación sigue un patrón de Arquitectura de Componentes basada en servicios para el manejo de datos asíncronos.
 
-## Development server
+Módulos: Arquitectura modular sencilla (AppModule).
 
-To start a local development server, run:
+Servicios: CountryService centraliza las llamadas a REST Countries API y World Bank API usando HttpClient.
 
-```bash
-ng serve
-```
+Rutas: Navegación basada en parámetros para detalles de país (ej. /country/:code).
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Dependencias Clave: Lucide-Angular (iconos), Angular Common/Http.
 
-## Code scaffolding
+Modelo de Datos
+Aunque el consumo es de APIs externas, el modelo se normaliza localmente:
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Interfaces: Country (datos geográficos) y GDPData (indicadores económicos).
 
-```bash
-ng generate component component-name
-```
+Firebase: En esta fase se usa Hosting. Si se añade Firestore:
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Colección users: Para guardar favoritos (id, uid, saved_countries[]).
 
-```bash
-ng generate --help
-```
+Reglas: allow read, write: if request.auth != null.
 
-## Building
+Estado y Navegación
+Estrategia de Estado: Estado local reactivo. Se utiliza un Subject o BehaviorSubject para emitir los cambios del país seleccionado a los componentes hijos.
 
-To build the project run:
+Navegación: Uso de Router para cambios de URL.
 
-```bash
-ng build
-```
+Lazy Loading: Implementado en la ruta de "Detalles" para reducir el bundle inicial, cargando el módulo de gráficas solo cuando es necesario.
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Decisiones Técnicas
+CSS Puro para Gráficas: Se evitó Chart.js o D3 para mantener el First Contentful Paint (FCP) bajo y evitar dependencias pesadas.
 
-## Running unit tests
+RxJS lastValueFrom: Uso de Promesas en la lógica de comparación de PIB para manejar múltiples peticiones secuenciales/paralelas de forma más legible.
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+OnPush Change Detection: Optimización para que Angular solo renderice cuando los datos de la API cambien.
 
-```bash
-ng test
-```
+Escalabilidad y Mantenimiento
+Crecimiento: Implementación de un Pattern Repository para que, si mañana cambia la API de países, solo se modifique el servicio y no los componentes.
 
-## Running end-to-end tests
+Migrabilidad: Separación estricta entre la lógica de negocio (servicios) y la UI (componentes presentacionales).
 
-For end-to-end (e2e) testing, run:
+Seguridad y Validaciones
 
-```bash
-ng e2e
-```
+Sanitización: Uso del pipe Async y protección nativa de Angular contra XSS en los inputs de búsqueda.
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+Rendimiento
+Caché: Uso de LocalStorage para persistir el último país consultado y evitar llamadas redundantes a la API.
 
-## Additional Resources
+Llamadas Agrupadas: Uso de forkJoin de RxJS para disparar las peticiones de PIB de los países similares simultáneamente.
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Accesibilidad (A11y)
+Teclado: Gestión de foco en el buscador y navegación mediante tabindex.
+
+Contraste: Paleta de colores validada bajo estándares WCAG AA para las barras de la gráfica.
+
+Aria-labels: Etiquetas descriptivas en las banderas y botones de comparación.
+
+. Uso de IA (Gemini)
+Dónde: Generación de lógica compleja para el filtrado por rango de población y diseño de la estructura CSS de las barras.
+
+Prompts: "Crea una función en TS que compare dos valores y devuelva un porcentaje máximo de 100 para una barra de progreso".
+
+Riesgos: Alucinaciones en rutas de API. Mitigación: Verificación manual en la documentación oficial de REST Countries.
+
+Limitaciones y Siguientes Pasos
+Limitación: La API del Banco Mundial puede tener latencia alta.
+
+Próximo Paso 1: Implementar NGRX para un manejo de estado global más robusto.
+
+Próximo Paso 2: Añadir Modo Oscuro automático basado en las preferencias del sistema.
